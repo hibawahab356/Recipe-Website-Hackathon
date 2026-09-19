@@ -237,5 +237,3 @@ if (document.querySelector("#myRecipes")) {
 
     myRecipes()
 }
-
-
