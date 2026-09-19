@@ -184,7 +184,7 @@ if (document.querySelector("#totalRecipes")) {
     const totalRecipes = async () => {
 
         const { data, error } = await client
-            .from("recipe_data")
+            .from("recipes")
             .select("id")
 
         console.log(data)
@@ -199,6 +199,43 @@ if (document.querySelector("#totalRecipes")) {
     }
 
     totalRecipes()
+}
+
+
+
+if (document.querySelector("#myRecipes")) {
+
+    const myRecipes = async () => {
+
+        const { data: userData, error: userError } = await client.auth.getUser()
+
+        console.log(userData)
+        console.log(userError)
+
+        if (userError) {
+            console.log(userError)
+            return
+        }
+
+        const user = userData.user
+
+        const { data, error } = await client
+            .from("recipes")
+            .select("id")
+            .eq("user_id", user.id)
+
+        console.log(data)
+        console.log(error)
+
+        if (error) {
+            console.log(error)
+            return
+        }
+
+        document.querySelector("#myRecipes").innerText = data.length
+    }
+
+    myRecipes()
 }
 
 
