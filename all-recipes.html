@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-      <link rel="stylesheet" href="bootstrap/bootstrap.css">
+
+    <title>All Recipes</title>
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.css">
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-    
-
-
-
-
-
-
-    <!-- Navbar -->
 
     <nav class="navbar navbar-expand-lg bg-light">
 
@@ -25,7 +23,6 @@
                 RecipeShare
             </a>
 
-
             <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
@@ -34,7 +31,6 @@
                 <span class="navbar-toggler-icon"></span>
 
             </button>
-
 
             <div class="collapse navbar-collapse" id="navbar">
 
@@ -47,7 +43,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="all-recipes.html">
+                        <a class="nav-link active" href="all-recipes.html">
                             All Recipes
                         </a>
                     </li>
@@ -59,7 +55,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="create-recipe.html">
+                        <a class="nav-link" href="recipe.html">
                             Add Recipe
                         </a>
                     </li>
@@ -79,102 +75,57 @@
     </nav>
 
 
-
-    <!-- Dashboard -->
-
     <div class="container py-5">
 
+        <h1>All Recipes</h1>
 
-        <!-- Welcome -->
-
-        <div class="mb-4">
-
-            <h1>Welcome Back!</h1>
-
-            <p class="text-muted">
-                Create and share your favorite recipes.
-            </p>
-
-            <a href="recipe.html" class="btn btn-dark">
-                Add Recipe
-            </a>
-
-        </div>
+        <p class="text-muted">
+            Explore recipes shared by our users.
+        </p>
 
 
+        <div class="row mb-4">
 
-        <!-- Stats -->
+            <div class="col-md-8">
 
-        <div class="row g-3 mb-5">
-
-
-            <div class="col-12 col-md-6">
-
-                <div class="card">
-
-                    <div class="card-body">
-
-                        <h5>Total Recipes</h5>
-
-                        <h2 id="totalRecipes">0</h2>
-
-                    </div>
-
-                </div>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="searchRecipe"
+                    placeholder="Search recipe..."
+                >
 
             </div>
 
 
-            <div class="col-12 col-md-6">
+            <div class="col-md-4">
 
-                <div class="card">
+                <select class="form-select" id="categoryFilter">
 
-                    <div class="card-body">
+                    <option value="">
+                        All Categories
+                    </option>
 
-                        <h5>My Recipes</h5>
-
-                        <h2 id="myRecipes">0</h2>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-
-        <div>
-
-            <h2 class="mb-3">
-                Recent Recipes
-            </h2>
-
-
-            <div class="row g-3" id="recipeContainer">
+                </select>
 
             </div>
 
         </div>
 
+
+        <div class="row g-4" id="allRecipeContainer">
+
+        </div>
 
     </div>
-
-
-
-
-
-
-
-
-
 
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="bootstrap/bootstrap.js"></script>
+
     <script src="app.js"></script>
+
 </body>
+
 </html>
