@@ -8,176 +8,192 @@ const client = createClient(supabaseUrl, supabaseKey);
 console.log(client);
 
 
+// signup
 
-// signp start
+let signupBtn = document.querySelector("#signup");
 
-let signupBtn = document.querySelector("#signup")
-
-
-signupBtn && signupBtn.addEventListener("click",(event)=>{
-    event.preventDefault()
-    window.location.href = "./signup.html"
-
-})
+signupBtn && signupBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.location.href = "./signup.html";
+});
 
 
-let formdetails = document.querySelector("#alldata")
+let formdetails = document.querySelector("#alldata");
 
+formdetails && formdetails.addEventListener("submit", async (event) => {
 
-formdetails && formdetails.addEventListener("submit",async(event)=>{
-    event.preventDefault()
-try{
+    event.preventDefault();
 
-    const alldata = new FormData(formdetails)
-     let emptyField = false 
-        
-        let inputs = document.querySelectorAll("input")
-        
-        
-        inputs.forEach((input)=>{
-            if(input.value === ""){
-                input.style.border = "2px solid red"
-                emptyField = true
+    try {
+
+        const alldata = new FormData(formdetails);
+
+        let inputs = document.querySelectorAll("input");
+
+        let emptyField = false;
+
+        inputs.forEach((input) => {
+
+            if (input.value === "") {
+                input.style.border = "2px solid red";
+                emptyField = true;
             }
-        })
-    const data = Object.fromEntries(alldata)
 
-    const {email,password,fullname} = data
-    console.log(email,password,fullname);
+        });
 
-// sign up authentication start
-    const { data:signupdata, error } = await client.auth.signUp({
-        email,
-        password,
-      })
-
-
-console.log(signupdata);
-console.log(error);
-
-      // signup code from supabse end
-
-      const id = signupdata?.user?.id
-      console.log(id);
-
-
-      const { error:insertionerror } = await client
-  .from('recipe_data')
-  .insert({ fullname,
-    user_id : id })
-
-
-    console.log(insertionerror);
-
-
-    if(signupdata){
-        console.log(signupdata,fullname);
-    }
-    else{
-        console.log(error.message);
-    }
-
-    
-
-}
-
-
-catch(error){
-    console.log(error);
-}
-   
-})
-
-
-
-
-// for blue inputs fields
-
-let inputs = document.querySelectorAll("input")
-
-
-inputs.forEach((input)=>{
-    input.addEventListener("input",()=>{
-        if(input.value !== ""){
-            input.style.border = ""
-            
+        if (emptyField) {
+            alert("Please fill all fields");
+            return;
         }
-    })
-    
-})
 
 
+        const data = Object.fromEntries(alldata);
+
+        const { email, password, fullname } = data;
 
 
+        const { data: signupdata, error } = await client.auth.signUp({
+            email,
+            password
+        });
 
 
-
-// login page start
- 
-
-
-let loginEmail = document.querySelector("#loginEmail")
-let loginPassword = document.querySelector("#loginPass")
-let loginBtn = document.querySelector("#loginButton")
-
-let loginFirst = document.querySelector("#login")
+        console.log(signupdata);
+        console.log(error);
 
 
-loginFirst && loginFirst.addEventListener("click",(event)=>{
-    event.preventDefault()
-    
-    window.location.href = "./login.html"
-})
+        if (error) {
+            alert(error.message);
+            return;
+        }
 
 
-loginBtn && loginBtn.addEventListener("click",async(event)=>{
-event.preventDefault() 
+        const id = signupdata?.user?.id;
 
 
-try{
-    const { data:signindata, error:signinerror } = await client.auth.signInWithPassword({
-  email: loginEmail.value,
-  password: loginPassword.value,
-})
-
-console.log(signindata);
-console.log(signinerror);
-
-window.location.href = "./dashboard.html"
-}
+        const { error: insertionerror } = await client
+            .from("recipe_data")
+            .insert({
+                fullname: fullname,
+                user_id: id
+            });
 
 
-catch(error){
-console.log(error);
-
-}
-
-})
+        console.log(insertionerror);
 
 
+        alert("Signup successful!");
+
+        window.location.href = "./login.html";
+
+    }
+    catch (error) {
+
+        console.log(error);
+
+    }
+
+});
+
+
+// input border
+
+let inputs = document.querySelectorAll("input");
+
+inputs.forEach((input) => {
+
+    input.addEventListener("input", () => {
+
+        if (input.value !== "") {
+            input.style.border = "";
+        }
+
+    });
+
+});
+
+
+// login
+
+let loginEmail = document.querySelector("#loginEmail");
+let loginPassword = document.querySelector("#loginPass");
+let loginBtn = document.querySelector("#loginButton");
+
+let loginFirst = document.querySelector("#login");
+
+
+loginFirst && loginFirst.addEventListener("click", (event) => {
+
+    event.preventDefault();
+
+    window.location.href = "./login.html";
+
+});
+
+
+loginBtn && loginBtn.addEventListener("click", async (event) => {
+
+    event.preventDefault();
+
+    try {
+
+        const { data: signindata, error: signinerror } =
+            await client.auth.signInWithPassword({
+                email: loginEmail.value,
+                password: loginPassword.value
+            });
+
+
+        console.log(signindata);
+        console.log(signinerror);
+
+
+        if (signinerror) {
+            alert(signinerror.message);
+            return;
+        }
+
+
+        window.location.href = "./dashboard.html";
+
+    }
+    catch (error) {
+
+        console.log(error);
+
+    }
+
+});
+
+
+// dashboard user check
 
 if (document.querySelector("#totalRecipes")) {
 
     const checkUser = async () => {
 
-        const { data, error } = await client.auth.getUser()
+        const { data, error } = await client.auth.getUser();
 
-        console.log(data)
-        console.log(error)
+        console.log(data);
+        console.log(error);
+
 
         if (!data.user) {
-            window.location.href = "./login.html"
-            return
+
+            window.location.href = "./login.html";
+
+            return;
         }
 
-        console.log(data.user)
-    }
+    };
 
-    checkUser()
+
+    checkUser();
+
 }
 
 
-
+// total recipes
 
 if (document.querySelector("#totalRecipes")) {
 
@@ -185,95 +201,117 @@ if (document.querySelector("#totalRecipes")) {
 
         const { data, error } = await client
             .from("recipes")
-            .select("id")
+            .select("id");
 
-        console.log(data)
-        console.log(error)
+
+        console.log(data);
+        console.log(error);
+
 
         if (error) {
-            console.log(error)
-            return
+            console.log(error);
+            return;
         }
 
-        document.querySelector("#totalRecipes").innerText = data.length
-    }
 
-    totalRecipes()
+        document.querySelector("#totalRecipes").innerText = data.length;
+
+    };
+
+
+    totalRecipes();
+
 }
 
 
+// my recipes count
 
 if (document.querySelector("#myRecipes")) {
 
     const myRecipes = async () => {
 
-        const { data: userData, error: userError } = await client.auth.getUser()
+        const { data: userData, error: userError } =
+            await client.auth.getUser();
 
-        console.log(userData)
-        console.log(userError)
 
         if (userError) {
-            console.log(userError)
-            return
+            console.log(userError);
+            return;
         }
 
-        const user = userData.user
+
+        let user = userData.user;
+
 
         const { data, error } = await client
             .from("recipes")
             .select("id")
-            .eq("user_id", user.id)
+            .eq("user_id", user.id);
 
-        console.log(data)
-        console.log(error)
 
         if (error) {
-            console.log(error)
-            return
+            console.log(error);
+            return;
         }
 
-        document.querySelector("#myRecipes").innerText = data.length
-    }
 
-    myRecipes()
+        document.querySelector("#myRecipes").innerText = data.length;
+
+    };
+
+
+    myRecipes();
+
 }
 
 
+// logout
 
-// logout 
-let logoutBtn = document.querySelector("#logoutBtn")
+let logoutBtn = document.querySelector("#logoutBtn");
+
 
 logoutBtn && logoutBtn.addEventListener("click", async () => {
 
-    const { error } = await client.auth.signOut()
+    const { error } = await client.auth.signOut();
 
-    console.log(error)
+
+    console.log(error);
+
 
     if (!error) {
-        window.location.href = "./login.html"
+
+        window.location.href = "./login.html";
+
     }
-})
+
+});
 
 
+// dashboard recent recipes
 
-// recent recipes 
 if (document.querySelector("#recipeContainer")) {
 
     const recentRecipes = async () => {
 
-          const { data, error } = await client
+        const { data, error } = await client
             .from("recipes")
-            .select("id, title, description, category, cooking_time")
+            .select("id, title, description, category, cooking_time");
 
-        console.log(data)
-        console.log(error)
+
+        console.log(data);
+        console.log(error);
+
 
         if (error) {
-            console.log(error)
-            return
+            console.log(error);
+            return;
         }
 
-        let container = document.querySelector("#recipeContainer")
+
+        let container = document.querySelector("#recipeContainer");
+
+        container.innerHTML = "";
+
 
         data.forEach((recipe) => {
 
@@ -297,80 +335,93 @@ if (document.querySelector("#recipeContainer")) {
                     </div>
 
                 </div>
-            `
-        })
-    }
+            `;
 
-    recentRecipes()
+        });
+
+    };
+
+
+    recentRecipes();
+
 }
 
 
-
-
-
-
-// recipe page satart
-
+// create recipe
 
 if (document.querySelector("#recipeForm")) {
 
-    let recipeForm = document.querySelector("#recipeForm")
+    let recipeForm = document.querySelector("#recipeForm");
 
-    let title = document.querySelector("#title")
-    let description = document.querySelector("#description")
-    let category = document.querySelector("#category")
-    let ingredients = document.querySelector("#ingredients")
-    let instructions = document.querySelector("#instructions")
-    let cookingTime = document.querySelector("#cookingTime")
-    let recipeImage = document.querySelector("#recipeImage")
+    let title = document.querySelector("#title");
+    let description = document.querySelector("#description");
+    let category = document.querySelector("#category");
+    let ingredients = document.querySelector("#ingredients");
+    let instructions = document.querySelector("#instructions");
+    let cookingTime = document.querySelector("#cookingTime");
+    let recipeImage = document.querySelector("#recipeImage");
 
 
     recipeForm.addEventListener("submit", async (event) => {
 
-        event.preventDefault()
+        event.preventDefault();
+
 
         try {
 
-            const { data: userData, error: userError } = await client.auth.getUser()
+            const { data: userData, error: userError } =
+                await client.auth.getUser();
 
-            console.log(userData)
-            console.log(userError)
 
-            if (userError) {
-                console.log(userError)
-                return
+            if (userError || !userData.user) {
+
+                alert("Please login first");
+
+                window.location.href = "./login.html";
+
+                return;
             }
 
-            let user = userData.user
 
+            let user = userData.user;
 
-            let imageUrl = ""
+            let imageUrl = "";
+
 
             if (recipeImage.files.length > 0) {
 
-                let imageFile = recipeImage.files[0]
+                let imageFile = recipeImage.files[0];
 
-                const { data: uploadData, error: uploadError } = await client
-                    .storage
-                    .from("recipe_images")
-                    .upload(imageFile.name, imageFile)
 
-                console.log(uploadData)
-                console.log(uploadError)
+                const { data: uploadData, error: uploadError } =
+                    await client
+                        .storage
+                        .from("recipe_images")
+                        .upload(imageFile.name, imageFile);
+
+
+                console.log(uploadData);
+                console.log(uploadError);
+
 
                 if (uploadError) {
-                    console.log(uploadError)
-                    return
+
+                    console.log(uploadError);
+
+                    alert(uploadError.message);
+
+                    return;
                 }
+
 
                 const { data: urlData } = client
                     .storage
                     .from("recipe_images")
-                    .getPublicUrl(imageFile.name)
+                    .getPublicUrl(imageFile.name);
 
-                imageUrl = urlData.publicUrl
 
-                console.log(imageUrl)
+                imageUrl = urlData.publicUrl;
+
             }
 
 
@@ -379,70 +430,87 @@ if (document.querySelector("#recipeForm")) {
                 .insert({
                     user_id: user.id,
                     title: title.value,
-
                     description: description.value,
                     category: category.value,
-
                     ingredients: ingredients.value,
                     instructions: instructions.value,
-                 cooking_time : cookingTime.value,
+                    cooking_time: cookingTime.value,
                     image_url: imageUrl
-                })
+                });
 
-            console.log(error)
+
+            console.log(error);
+
 
             if (error) {
-                console.log(error)
-                return
+
+                console.log(error);
+
+                alert(error.message);
+
+                return;
             }
 
-            alert("Recipe Added Successfully")
 
-            recipeForm.reset()
+            alert("Recipe Added Successfully");
+
+            recipeForm.reset();
 
         }
         catch (error) {
 
-            console.log(error)
+            console.log(error);
 
         }
 
-    })
+    });
+
 }
 
 
+// my recipes
 
-
-
-
-
-// my recipe start
 if (document.querySelector("#myRecipeContainer")) {
 
     const myRecipes = async () => {
 
         try {
 
-            const { data: userData, error: userError } = await client.auth.getUser()
+            const { data: userData, error: userError } =
+                await client.auth.getUser();
 
-            if (userError) {
-                console.log(userError)
-                return
+
+            if (userError || !userData.user) {
+
+                window.location.href = "./login.html";
+
+                return;
             }
 
-            let user = userData.user
+
+            let user = userData.user;
+
 
             const { data, error } = await client
                 .from("recipes")
                 .select("id, title, description, category, ingredients, instructions, cooking_time, image_url")
-                .eq("user_id", user.id)
+                .eq("user_id", user.id);
+
 
             if (error) {
-                console.log(error)
-                return
+
+                console.log(error);
+
+                return;
             }
 
-            let container = document.querySelector("#myRecipeContainer")
+
+            let container =
+                document.querySelector("#myRecipeContainer");
+
+
+            container.innerHTML = "";
+
 
             data.forEach((recipe) => {
 
@@ -451,7 +519,8 @@ if (document.querySelector("#myRecipeContainer")) {
 
                         <div class="card h-100">
 
-                            <img src="${recipe.image_url}" class="card-img-top">
+                            <img src="${recipe.image_url}"
+                                class="card-img-top">
 
                             <div class="card-body">
 
@@ -463,11 +532,16 @@ if (document.querySelector("#myRecipeContainer")) {
 
                                 <p>Cooking Time: ${recipe.cooking_time}</p>
 
-                                <button class="btn btn-dark editBtn" data-id="${recipe.id}">
+                                <button
+                                    class="btn btn-dark editBtn"
+                                    data-id="${recipe.id}">
                                     Edit
                                 </button>
 
-                                <button class="btn btn-danger deleteBtn" data-id="${recipe.id}" data-image="${recipe.image_url}">
+                                <button
+                                    class="btn btn-danger deleteBtn"
+                                    data-id="${recipe.id}"
+                                    data-image="${recipe.image_url}">
                                     Delete
                                 </button>
 
@@ -476,391 +550,459 @@ if (document.querySelector("#myRecipeContainer")) {
                         </div>
 
                     </div>
-                `
-            })
+                `;
+
+            });
 
 
-            let deleteButtons = document.querySelectorAll(".deleteBtn")
+            let deleteButtons =
+                document.querySelectorAll(".deleteBtn");
+
 
             deleteButtons.forEach((button) => {
 
                 button.addEventListener("click", async () => {
 
-                    let id = button.getAttribute("data-id")
-                    let imageUrl = button.getAttribute("data-image")
+                    let id = button.getAttribute("data-id");
+
+                    let imageUrl =
+                        button.getAttribute("data-image");
+
 
                     try {
 
                         if (imageUrl) {
 
-                            let imagePath = imageUrl.split("/recipe_images/")[1]
+                            let imagePath =
+                                imageUrl.split("/recipe_images/")[1];
 
-                            const { error: imageError } = await client
-                                .storage
-                                .from("recipe_images")
-                                .remove([imagePath])
 
-                            if (imageError) {
-                                console.log(imageError)
-                                return
+                            if (imagePath) {
+
+                                const { error: imageError } =
+                                    await client
+                                        .storage
+                                        .from("recipe_images")
+                                        .remove([imagePath]);
+
+
+                                if (imageError) {
+                                    console.log(imageError);
+                                }
+
                             }
+
                         }
+
 
                         const { error } = await client
                             .from("recipes")
                             .delete()
-                            .eq("id", id)
+                            .eq("id", id);
+
 
                         if (error) {
-                            console.log(error)
-                            return
+
+                            console.log(error);
+
+                            return;
                         }
 
-                        alert("Recipe Deleted Successfully")
 
-                        location.reload()
+                        alert("Recipe Deleted Successfully");
+
+                        location.reload();
 
                     }
                     catch (error) {
 
-                        console.log(error)
+                        console.log(error);
 
                     }
 
-                })
+                });
 
-            })
+            });
 
 
-            let editButtons = document.querySelectorAll(".editBtn")
+            let editButtons =
+                document.querySelectorAll(".editBtn");
+
 
             editButtons.forEach((button) => {
 
                 button.addEventListener("click", async () => {
 
-                    let id = button.getAttribute("data-id")
+                    let id = button.getAttribute("data-id");
 
-                    let title = prompt("Enter Recipe Title")
-                    let description = prompt("Enter Recipe Description")
-                    let category = prompt("Enter Category")
-                    let ingredients = prompt("Enter Ingredients")
-                    let instructions = prompt("Enter Instructions")
-                    let cookingTime = prompt("Enter Cooking Time")
 
-                    if (!title || !description || !category || !ingredients || !instructions || !cookingTime) {
-                        alert("Please fill all fields")
-                        return
+                    let newTitle =
+                        prompt("Enter Recipe Title");
+
+                    let newDescription =
+                        prompt("Enter Recipe Description");
+
+                    let newCategory =
+                        prompt("Enter Category");
+
+                    let newIngredients =
+                        prompt("Enter Ingredients");
+
+                    let newInstructions =
+                        prompt("Enter Instructions");
+
+                    let newCookingTime =
+                        prompt("Enter Cooking Time");
+
+
+                    if (
+                        !newTitle ||
+                        !newDescription ||
+                        !newCategory ||
+                        !newIngredients ||
+                        !newInstructions ||
+                        !newCookingTime
+                    ) {
+
+                        alert("Please fill all fields");
+
+                        return;
                     }
 
-                    try {
 
-                        const { error } = await client
-                            .from("recipes")
-                            .update({
-                                title: title,
-                                description: description,
-                                category: category,
-                                ingredients: ingredients,
-                                instructions: instructions,
-                                cooking_time: cookingTime
-                            })
-                            .eq("id", id)
+                    const { error } = await client
+                        .from("recipes")
+                        .update({
+                            title: newTitle,
+                            description: newDescription,
+                            category: newCategory,
+                            ingredients: newIngredients,
+                            instructions: newInstructions,
+                            cooking_time: newCookingTime
+                        })
+                        .eq("id", id);
 
-                        if (error) {
-                            console.log(error)
-                            return
-                        }
 
-                        alert("Recipe Updated Successfully")
+                    if (error) {
 
-                        location.reload()
+                        console.log(error);
 
-                    }
-                    catch (error) {
-
-                        console.log(error)
-
+                        return;
                     }
 
-                })
 
-            })
+                    alert("Recipe Updated Successfully");
+
+                    location.reload();
+
+                });
+
+            });
 
         }
         catch (error) {
 
-            console.log(error)
+            console.log(error);
 
         }
 
-    }
+    };
 
-    myRecipes()
+
+    myRecipes();
+
 }
 
-let homerecipe = document.querySelector("#home")
-homerecipe && homerecipe.addEventListener("click",(event)=>{
-    event.preventDefault()
-    window.location.href = "./all-recipes.html"
-})
 
+// home button
+
+let homerecipe = document.querySelector("#home");
+
+
+homerecipe && homerecipe.addEventListener("click", (event) => {
+
+    event.preventDefault();
+
+    window.location.href = "./all-recipes.html";
+
+});
+
+
+// all recipes
 
 if (document.querySelector("#allRecipeContainer")) {
 
-    let searchRecipe = document.querySelector("#searchRecipe")
-    let categoryFilter = document.querySelector("#categoryFilter")
-    let container = document.querySelector("#allRecipeContainer")
+    let searchRecipe =
+        document.querySelector("#searchRecipe");
+
+    let categoryFilter =
+        document.querySelector("#categoryFilter");
+
+    let container =
+        document.querySelector("#allRecipeContainer");
 
 
-    const loadCategories = async () => {
-
-        const { data, error } = await client
-            .from("categories")
-            .select("id, name")
-
-        if (error) {
-            console.log(error)
-            return
-        }
-
-        data.forEach((category) => {
-
-            categoryFilter.innerHTML += `
-                <option value="${category.name}">
-                    ${category.name}
-                </option>
-            `
-
-        })
-
-    }
+    categoryFilter.innerHTML = `
+        <option value="">All Categories</option>
+        <option value="Pakistani">Pakistani</option>
+        <option value="Italian">Italian</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Desserts">Desserts</option>
+        <option value="Fast Food">Fast Food</option>
+        <option value="Healthy">Healthy</option>
+    `;
 
 
     const loadRecipes = async () => {
 
-        try {
-
-            const { data, error } = await client
-                .from("recipes")
-                .select("id, title, description, category, cooking_time, image_url, user_id")
-
-            if (error) {
-                console.log(error)
-                return
-            }
-
-            container.innerHTML = ""
-
-            data.forEach(async (recipe) => {
-
-                const { data: recipeIngredients, error: ingredientError } = await client
-                    .from("recipe_ingredients")
-                    .select("ingredient_id")
-                    .eq("recipe_id", recipe.id)
-
-                if (ingredientError) {
-                    console.log(ingredientError)
-                    return
-                }
-
-                let ingredientText = ""
-
-                recipeIngredients.forEach(async (item) => {
-
-                    const { data: ingredient, error } = await client
-                        .from("ingredients")
-                        .select("name")
-                        .eq("id", item.ingredient_id)
-
-                    if (error) {
-                        console.log(error)
-                        return
-                    }
-
-                    if (ingredient.length > 0) {
-                        ingredientText += ingredient[0].name + ", "
-                    }
-
-                })
+        const { data, error } = await client
+            .from("recipes")
+            .select("id, title, description, category, cooking_time, image_url");
 
 
-                const { data: favoriteData, error: favoriteError } = await client
-                    .from("recipe_favorites")
-                    .select("id")
-                    .eq("recipe_id", recipe.id)
-
-                if (favoriteError) {
-                    console.log(favoriteError)
-                }
+        console.log(data);
+        console.log(error);
 
 
-                let favoriteText = "Favorite"
+        if (error) {
 
-                if (favoriteData.length > 0) {
-                    favoriteText = "Favorited"
-                }
+            console.log(error);
+
+            return;
+        }
 
 
-                container.innerHTML += `
-                    <div class="col-12 col-md-6 col-lg-4">
+        container.innerHTML = "";
 
-                        <div class="card h-100">
 
-                            <img src="${recipe.image_url}" class="card-img-top">
+        data.forEach((recipe) => {
 
-                            <div class="card-body">
+            container.innerHTML += `
+                <div class="col-12 col-md-6 col-lg-4 recipeCard"
+                    data-category="${recipe.category}">
 
-                                <h5>${recipe.title}</h5>
+                    <div class="card h-100">
 
-                                <p>${recipe.description}</p>
+                        <img
+                            src="${recipe.image_url}"
+                            class="card-img-top">
 
-                                <p>
-                                    Category: ${recipe.category}
-                                </p>
+                        <div class="card-body">
 
-                                <p>
-                                    Cooking Time: ${recipe.cooking_time}
-                                </p>
+                            <h5>${recipe.title}</h5>
 
-                                <p>
-                                    Ingredients: ${ingredientText}
-                                </p>
+                            <p>${recipe.description}</p>
 
-                                <button class="btn btn-dark detailsBtn"
-                                    data-id="${recipe.id}">
-                                    View Details
-                                </button>
+                            <p>
+                                Category: ${recipe.category}
+                            </p>
 
-                                <button class="btn btn-outline-dark favoriteBtn"
-                                    data-id="${recipe.id}">
-                                    ${favoriteText}
-                                </button>
+                            <p>
+                                Cooking Time:
+                                ${recipe.cooking_time}
+                            </p>
 
-                            </div>
+                            <button
+                                class="btn btn-dark detailsBtn"
+                                data-id="${recipe.id}">
+                                View Details
+                            </button>
 
                         </div>
 
                     </div>
-                `
 
-            })
+                </div>
+            `;
 
-
-            setTimeout(() => {
-
-                let detailsButtons = document.querySelectorAll(".detailsBtn")
-
-                detailsButtons.forEach((button) => {
-
-                    button.addEventListener("click", () => {
-
-                        let id = button.getAttribute("data-id")
-
-                        window.location.href =
-                            "recipe-details.html?id=" + id
-
-                    })
-
-                })
+        });
 
 
-                let favoriteButtons = document.querySelectorAll(".favoriteBtn")
-
-                favoriteButtons.forEach((button) => {
-
-                    button.addEventListener("click", async () => {
-
-                        let recipeId = button.getAttribute("data-id")
-
-                        const { data: userData, error: userError } =
-                            await client.auth.getUser()
-
-                        if (userError) {
-                            console.log(userError)
-                            return
-                        }
-
-                        let user = userData.user
-
-                        const { error } = await client
-                            .from("recipe_favorites")
-                            .insert({
-                                recipe_id: recipeId,
-                                user_id: user.id
-                            })
-
-                        if (error) {
-                            console.log(error)
-                            return
-                        }
-
-                        button.innerText = "Favorited"
-
-                    })
-
-                })
-
-            }, 500)
-
-        }
-        catch (error) {
-
-            console.log(error)
-
-        }
-
-    }
+        let detailsButtons =
+            document.querySelectorAll(".detailsBtn");
 
 
-    loadCategories()
+        detailsButtons.forEach((button) => {
 
-    loadRecipes()
+            button.addEventListener("click", () => {
+
+                let id =
+                    button.getAttribute("data-id");
+
+
+                window.location.href =
+                    "./recipe-details.html?id=" + id;
+
+            });
+
+        });
+
+    };
+
+
+    loadRecipes();
 
 
     searchRecipe.addEventListener("input", () => {
 
-        let searchValue = searchRecipe.value.toLowerCase()
+        let searchValue =
+            searchRecipe.value.toLowerCase();
 
-        let cards = document.querySelectorAll("#allRecipeContainer .col-12")
+
+        let cards =
+            document.querySelectorAll(".recipeCard");
+
 
         cards.forEach((card) => {
 
-            let title = card.querySelector("h5").innerText.toLowerCase()
+            let title =
+                card.querySelector("h5")
+                    .innerText
+                    .toLowerCase();
+
 
             if (title.includes(searchValue)) {
-                card.style.display = "block"
+
+                card.style.display = "block";
+
             }
             else {
-                card.style.display = "none"
+
+                card.style.display = "none";
+
             }
 
-        })
+        });
 
-    })
+    });
 
 
     categoryFilter.addEventListener("change", () => {
 
-        let selectedCategory = categoryFilter.value
+        let selectedCategory =
+            categoryFilter.value;
 
-        let cards = document.querySelectorAll("#allRecipeContainer .col-12")
+
+        let cards =
+            document.querySelectorAll(".recipeCard");
+
 
         cards.forEach((card) => {
 
-            let category = card.querySelector("p").innerText
+            let cardCategory =
+                card.getAttribute("data-category");
+
 
             if (
-                selectedCategory == "" ||
-                category.includes(selectedCategory)
+                selectedCategory === "" ||
+                cardCategory === selectedCategory
             ) {
-                card.style.display = "block"
+
+                card.style.display = "block";
+
             }
             else {
-                card.style.display = "none"
+
+                card.style.display = "none";
+
             }
 
-        })
+        });
 
-    })
+    });
+
+}
+
+
+// recipe details
+
+if (document.querySelector("#recipeDetails")) {
+
+    const loadRecipeDetails = async () => {
+
+        let url =
+            new URLSearchParams(window.location.search);
+
+
+        let id = url.get("id");
+
+
+        if (!id) {
+
+            return;
+
+        }
+
+
+        const { data, error } = await client
+            .from("recipes")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+
+        console.log(data);
+        console.log(error);
+
+
+        if (error) {
+
+            console.log(error);
+
+            return;
+
+        }
+
+
+        let container =
+            document.querySelector("#recipeDetails");
+
+
+        container.innerHTML = `
+            <div class="card">
+
+                <img
+                    src="${data.image_url}"
+                    class="card-img-top"
+                    style="max-height:450px; object-fit:cover;">
+
+                <div class="card-body p-4">
+
+                    <h1>${data.title}</h1>
+
+                    <p>${data.description}</p>
+
+                    <p>
+                        <strong>Category:</strong>
+                        ${data.category}
+                    </p>
+
+                    <p>
+                        <strong>Cooking Time:</strong>
+                        ${data.cooking_time}
+                    </p>
+
+                    <h4>Ingredients</h4>
+
+                    <p>${data.ingredients}</p>
+
+                    <h4>Instructions</h4>
+
+                    <p>${data.instructions}</p>
+
+                    <p>
+                        <strong>Date:</strong>
+                        ${new Date(data.created_at).toLocaleDateString()}
+                    </p>
+
+                </div>
+
+            </div>
+        `;
+
+    };
+
+
+    loadRecipeDetails();
 
 }
